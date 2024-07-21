@@ -1,0 +1,9 @@
+go 1.23rc1
+
+use (
+	./comment
+	./common
+	./gateway
+	./post
+	./user
+)

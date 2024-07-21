@@ -1,0 +1,7 @@
+POST http://localhost:8000/api/auth/register
+
+{
+    "username": "test",
+    "email": "test@test.com",
+    "password": "test"
+}
