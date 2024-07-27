@@ -6,16 +6,17 @@ import (
 
 	common "github.com/dongsu8142/blog-common"
 	pb "github.com/dongsu8142/blog-common/api"
+	"github.com/dongsu8142/blog-gateway/gateway"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type handler struct {
-	client pb.UserServiceClient
+	gateway gateway.UserGateway
 }
 
-func NewHandler(client pb.UserServiceClient) *handler {
-	return &handler{client}
+func NewHandler(gateway gateway.UserGateway) *handler {
+	return &handler{gateway}
 }
 
 func (h *handler) registerRoutes(mux *http.ServeMux) {
@@ -34,7 +35,8 @@ func (h *handler) HandleRegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := h.client.RegisterUser(r.Context(), user)
+	u, err := h.gateway.RegisterUser(r.Context(), user)
+
 	if rStatus := status.Convert(err); rStatus != nil {
 		if rStatus.Code() != codes.InvalidArgument {
 			common.WriteError(w, http.StatusBadRequest, rStatus.Message())

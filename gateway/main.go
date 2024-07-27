@@ -3,31 +3,47 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	common "github.com/dongsu8142/blog-common"
-	pb "github.com/dongsu8142/blog-common/api"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/dongsu8142/blog-common/discovery"
+	"github.com/dongsu8142/blog-common/discovery/consul"
+	"github.com/dongsu8142/blog-gateway/gateway"
 )
 
 var (
+	serviceName = "gateway"
 	httpAddr        = common.EnvString("HTTP_ADDR", ":8000")
-	userServiceAddr = "localhost:2000"
+	consulAddr = common.EnvString("CONSUL_ADDR", "localhost:8500")
 )
 
 func main() {
-	conn, err := grpc.NewClient(userServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	registry, err := consul.NewRegistry(consulAddr, serviceName)
 	if err != nil {
-		log.Fatalf("Failed to dial server: %v", err)
+		panic(err)
 	}
-	defer conn.Close()
 
-	log.Println("Dialing user service at ", userServiceAddr)
+	instanceID := discovery.GenerateInstanceID(serviceName)
+	if err := registry.Register(instanceID, serviceName, httpAddr); err != nil {
+		panic(err)
+	}
 
-	c := pb.NewUserServiceClient(conn)
+	go func() {
+		for {
+			if err := registry.HealthCheck(instanceID, serviceName); err != nil {
+				log.Fatal("failed to health check")
+			}
+			time.Sleep(time.Second * 1)
+		}
+	}()
+
+	defer registry.Deregister(instanceID, serviceName)
 
 	mux := http.NewServeMux()
-	handler := NewHandler(c)
+
+	userGateway := gateway.NewGRPCGateway(registry)
+
+	handler := NewHandler(userGateway)
 	handler.registerRoutes(mux)
 
 	log.Printf("Starting HTTP server at %s", httpAddr)
