@@ -8,4 +8,5 @@ import (
 
 type UserGateway interface {
 	RegisterUser(context.Context, *pb.RegisterUserRequest) (*pb.RegisterUserResponse, error)
+	LoginUser(context.Context, *pb.LoginUserRequest) (*pb.LoginUserResponse, error)
 }

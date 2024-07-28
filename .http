@@ -5,3 +5,12 @@ POST http://localhost:8000/api/auth/register
     "email": "test@test.com",
     "password": "test"
 }
+
+###
+
+POST http://localhost:8000/api/auth/login
+
+{
+    "username": "test",
+    "password": "test"
+}

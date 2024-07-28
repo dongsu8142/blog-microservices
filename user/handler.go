@@ -22,6 +22,11 @@ func NewHandler(grpcServer *grpc.Server, service UserService) {
 }
 
 func (h *Handler) RegisterUser(ctx context.Context, p *pb.RegisterUserRequest) (*pb.RegisterUserResponse, error) {
-	log.Printf("Register user received! User %v", p)
+	log.Println("Register user received!")
 	return h.service.RegisterUser(p)
+}
+
+func (h *Handler) LoginUser(ctx context.Context, p *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
+	log.Println("Login user recevied!")
+	return h.service.LoginUser(p)
 }

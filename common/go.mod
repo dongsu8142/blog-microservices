@@ -3,6 +3,7 @@ module github.com/dongsu8142/blog-common
 go 1.22
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/hashicorp/consul/api v1.29.2
 	golang.org/x/crypto v0.25.0
 	google.golang.org/grpc v1.56.3

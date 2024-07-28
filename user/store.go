@@ -32,3 +32,12 @@ func (s *store) Register(username, email, password string) error {
 	}
 	return nil
 }
+
+func (s *store) Login(username string) (*database.User, error) {
+	var user database.User
+	result := s.db.First(&user, "username = ?", username)
+	if result.Error != nil {
+		return nil, errors.New("not found, invalid username")
+	}
+	return &user, nil
+}

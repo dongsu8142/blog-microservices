@@ -6,6 +6,7 @@ package api;
 
 service UserService {
     rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+    rpc LoginUser(LoginUserRequest) returns (LoginUserResponse);
 }
 
 message RegisterUserRequest {
@@ -17,4 +18,13 @@ message RegisterUserRequest {
 message RegisterUserResponse {
     bool success = 1;
     string message = 2;
+}
+
+message LoginUserRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginUserResponse {
+    string token = 1;
 }

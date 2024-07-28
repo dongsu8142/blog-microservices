@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	UserService_RegisterUser_FullMethodName = "/api.UserService/RegisterUser"
+	UserService_LoginUser_FullMethodName    = "/api.UserService/LoginUser"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	RegisterUser(ctx context.Context, in *RegisterUserRequest, opts ...grpc.CallOption) (*RegisterUserResponse, error)
+	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
 }
 
 type userServiceClient struct {
@@ -46,11 +48,21 @@ func (c *userServiceClient) RegisterUser(ctx context.Context, in *RegisterUserRe
 	return out, nil
 }
 
+func (c *userServiceClient) LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error) {
+	out := new(LoginUserResponse)
+	err := c.cc.Invoke(ctx, UserService_LoginUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
 	RegisterUser(context.Context, *RegisterUserRequest) (*RegisterUserResponse, error)
+	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedUserServiceServer struct {
 
 func (UnimplementedUserServiceServer) RegisterUser(context.Context, *RegisterUserRequest) (*RegisterUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterUser not implemented")
+}
+func (UnimplementedUserServiceServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -92,6 +107,24 @@ func _UserService_RegisterUser_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_LoginUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).LoginUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_LoginUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).LoginUser(ctx, req.(*LoginUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterUser",
 			Handler:    _UserService_RegisterUser_Handler,
+		},
+		{
+			MethodName: "LoginUser",
+			Handler:    _UserService_LoginUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

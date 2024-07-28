@@ -21,6 +21,7 @@ func NewHandler(gateway gateway.UserGateway) *handler {
 
 func (h *handler) registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/auth/register", h.HandleRegisterUser)
+	mux.HandleFunc("POST /api/auth/login", h.HandleLoginUser)
 }
 
 func (h *handler) HandleRegisterUser(w http.ResponseWriter, r *http.Request) {
@@ -48,15 +49,35 @@ func (h *handler) HandleRegisterUser(w http.ResponseWriter, r *http.Request) {
 	common.WriteJSON(w, http.StatusOK, u)
 }
 
+func (h *handler) HandleLoginUser(w http.ResponseWriter, r *http.Request) {
+	var user *pb.LoginUserRequest
+	if err := common.ReadJSON(r, &user); err != nil {
+		common.WriteError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	u, err := h.gateway.LoginUser(r.Context(), user)
+
+	if rStatus := status.Convert(err); rStatus != nil {
+		if rStatus.Code() != codes.InvalidArgument {
+			common.WriteError(w, http.StatusBadRequest, rStatus.Message())
+			return
+		}
+		common.WriteError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	common.WriteJSON(w, http.StatusOK, u)
+}
+
 func validateUser(user *pb.RegisterUserRequest) error {
 	if user.Username == "" {
-		return errors.New("Username is required")
+		return errors.New("username is required")
 	}
 	if user.Email == "" {
-		return errors.New("Email is required")
+		return errors.New("email is required")
 	}
 	if user.Password == "" {
-		return errors.New("Password is required")
+		return errors.New("password is required")
 	}
 	return nil
 }
