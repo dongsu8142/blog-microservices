@@ -1,12 +1,29 @@
 package main
 
+import (
+	"github.com/dongsu8142/blog-common/database"
+	"gorm.io/gorm"
+)
+
 type store struct {
+	db *gorm.DB
 }
 
-func NewStore() *store {
-	return &store{}
+func NewStore(host, user, password, dbname, port string) *store {
+	db, err := database.ConnectDatabase(host, user, password, dbname, port)
+	if err != nil {
+		panic(err)
+	}
+	db.Migrator().DropTable(&database.User{})
+	db.AutoMigrate(&database.User{})
+	return &store{db}
 }
 
-func (s *store) Register() error {
+func (s *store) Register(username, email, password string) error {
+	s.db.Create(&database.User{
+		Username: username,
+		Email:    email,
+		Password: password,
+	})
 	return nil
 }

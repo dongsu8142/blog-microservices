@@ -15,6 +15,11 @@ var (
 	serviceName = "user"
 	grpcAddr    = common.EnvString("GRPC_ADDR", "localhost:2000")
 	consulAddr  = common.EnvString("CONSUL_ADDR", "localhost:8500")
+	dbHost      = common.EnvString("DB_HOST", "localhost")
+	dbUser      = common.EnvString("DB_USER", "user")
+	dbPassword  = common.EnvString("DB_PASSWORD", "password")
+	dbName      = common.EnvString("DB_NAME", "user")
+	dbPort      = common.EnvString("DB_PORT", "5432")
 )
 
 func main() {
@@ -47,7 +52,7 @@ func main() {
 	}
 	defer l.Close()
 
-	store := NewStore()
+	store := NewStore(dbHost, dbUser, dbPassword, dbName, dbPort)
 	svc := NewService(store)
 	NewHandler(grpcServer, svc)
 

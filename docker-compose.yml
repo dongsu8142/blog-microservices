@@ -5,3 +5,30 @@ services:
     ports:
       - 8500:8500
       - 8600:8600/udp
+  user-db:
+    image: postgres:alpine
+    command: -p 5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user
+    ports:
+      - 5432:5432
+  post-db:
+    image: postgres:alpine
+    command: -p 5433
+    environment:
+      POSTGRES_USER: post
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: post
+    ports:
+      - 5433:5433
+  comment-db:
+    image: postgres:alpine
+    command: -p 5434
+    environment:
+      POSTGRES_USER: comment
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: comment
+    ports:
+      - 5434:5434

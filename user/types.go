@@ -7,5 +7,5 @@ type UserService interface {
 }
 
 type UserStore interface {
-	Register() error
+	Register(string, string, string) error
 }
