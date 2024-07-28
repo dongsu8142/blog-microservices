@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/dongsu8142/blog-common/database"
 	"gorm.io/gorm"
 )
@@ -20,10 +22,13 @@ func NewStore(host, user, password, dbname, port string) *store {
 }
 
 func (s *store) Register(username, email, password string) error {
-	s.db.Create(&database.User{
+	result := s.db.Create(&database.User{
 		Username: username,
 		Email:    email,
 		Password: password,
 	})
+	if result.Error != nil {
+		return errors.New("username already exists")
+	}
 	return nil
 }

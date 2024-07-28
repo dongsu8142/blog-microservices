@@ -18,7 +18,9 @@ func (s *service) RegisterUser(user *pb.RegisterUserRequest) (*pb.RegisterUserRe
 	if err != nil {
 		return nil, err
 	}
-	s.store.Register(user.Username, user.Email, password)
+	if err := s.store.Register(user.Username, user.Email, password); err != nil {
+		return nil, err
+	}
 	res := &pb.RegisterUserResponse{
 		Success: true,
 		Message: "User registered",
