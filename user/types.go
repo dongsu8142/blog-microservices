@@ -13,4 +13,5 @@ type UserService interface {
 type UserStore interface {
 	Register(string, string, string) error
 	Login(string) (*database.User, error)
+	GetUserByID(id int) (*database.User, error)
 }

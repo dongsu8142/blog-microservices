@@ -41,3 +41,12 @@ func (s *store) Login(username string) (*database.User, error) {
 	}
 	return &user, nil
 }
+
+func (s *store) GetUserByID(id int) (*database.User, error) {
+	var user database.User
+	result := s.db.First(&user, id)
+	if result.Error != nil {
+		return nil, errors.New("not found, invalid id")
+	}
+	return &user, nil
+}

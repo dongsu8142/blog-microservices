@@ -1,4 +1,6 @@
-POST http://localhost:8000/api/auth/register
+@baseUrl = http://localhost:8000/api
+
+POST {{baseUrl}}/auth/register
 
 {
     "username": "test",
@@ -6,11 +8,12 @@ POST http://localhost:8000/api/auth/register
     "password": "test"
 }
 
-###
-
-POST http://localhost:8000/api/auth/login
+# @name token
+POST {{baseUrl}}/auth/login
 
 {
     "username": "test",
     "password": "test"
 }
+
+@authToken = {{token.response.body.token}}
